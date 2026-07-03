@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  image     String?
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+
+  enrolledClasses ClassEnrollment[]
+  taughtClasses   Class[]
+  announcements   Announcement[]
+  doubts          Doubt[]       @relation("StudentDoubts")
+  doubtReplies    DoubtReply[]
+  assignments     Assignment[]
+}
+
+model Class {
+  id          String   @id @default(cuid())
+  name        String
+  section     String?
+  subject     String?
+  room        String?
+  code        String   @unique @default(cuid())
+  coverColor  String   @default("#1565C0")
+  createdAt   DateTime @default(now())
+
+  teacher     User     @relation(fields: [teacherId], references: [id])
+  teacherId   String
+
+  enrollments   ClassEnrollment[]
+  announcements Announcement[]
+  videoLectures VideoLecture[]
+  doubts        Doubt[]
+  assignments   Assignment[]
+}
+
+model ClassEnrollment {
+  id        String   @id @default(cuid())
+  student   User     @relation(fields: [studentId], references: [id])
+  studentId String
+  class     Class    @relation(fields: [classId], references: [id])
+  classId   String
+  joinedAt  DateTime @default(now())
+
+  @@unique([studentId, classId])
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classId   String
+
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+}
+
+model VideoLecture {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  videoUrl    String
+  summary     String?
+  createdAt   DateTime @default(now())
+
+  class       Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classId     String
+
+  quizzes     Quiz[]
+}
+
+model Quiz {
+  id        String   @id @default(cuid())
+  title     String
+  createdAt DateTime @default(now())
+
+  lecture   VideoLecture @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+  lectureId String
+
+  questions QuizQuestion[]
+}
+
+model QuizQuestion {
+  id            String   @id @default(cuid())
+  question      String
+  options       String[] 
+  correctIndex  Int
+  explanation   String?
+
+  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  quizId        String
+}
+
+model Doubt {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  targetType  DoubtTarget @default(TEACHER)
+  resolved    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  class       Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classId     String
+
+  student     User     @relation("StudentDoubts", fields: [studentId], references: [id], onDelete: Cascade)
+  studentId   String
+
+  replies     DoubtReply[]
+}
+
+model DoubtReply {
+  id          String   @id @default(cuid())
+  content     String
+  isAiReply   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  doubt       Doubt    @relation(fields: [doubtId], references: [id], onDelete: Cascade)
+  doubtId     String
+
+  author      User?    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId    String?
+}
+
+model Assignment {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  type        AssignmentType @default(ASSIGNMENT)
+  dueDate     DateTime?
+  points      Int?
+  fileUrl     String?
+  fileName    String?
+  createdAt   DateTime       @default(now())
+
+  class       Class          @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classId     String
+
+  author      User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId    String
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum DoubtTarget {
+  TEACHER
+  AI_AGENT
+}
+
+enum AssignmentType {
+  ASSIGNMENT
+  MATERIAL
+}

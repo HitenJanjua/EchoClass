@@ -1,0 +1,189 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: #eef1f5;
+  --foreground: #1a2332;
+  --card: #ffffff;
+  --card-foreground: #1a2332;
+  --popover: #ffffff;
+  --popover-foreground: #1a2332;
+  --primary: #155a75;
+  --primary-foreground: #ffffff;
+  --secondary: #e8edf2;
+  --secondary-foreground: #1a2332;
+  --muted: #e8edf2;
+  --muted-foreground: #5a6a7e;
+  --accent: #dce4ed;
+  --accent-foreground: #1a2332;
+  --destructive: #dc3545;
+  --border: #d0d9e3;
+  --input: #d0d9e3;
+  --ring: #155a75;
+  --radius: 0.625rem;
+
+  /* TPO-style semantic tokens */
+  --navbar-bg: #1a3c5e;
+  --navbar-fg: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #155a75;
+  --sidebar-active-fg: #ffffff;
+  --sidebar-hover: #eef1f5;
+  --sidebar-text: #3a4a5c;
+  --sidebar-border: #e0e6ed;
+  --teal-header: #15717d;
+}
+
+.dark {
+  --background: #0f1923;
+  --foreground: #e8edf2;
+  --card: #1a2736;
+  --card-foreground: #e8edf2;
+  --popover: #1a2736;
+  --popover-foreground: #e8edf2;
+  --primary: #2b8fa3;
+  --primary-foreground: #ffffff;
+  --secondary: #1e2e3e;
+  --secondary-foreground: #e8edf2;
+  --muted: #1e2e3e;
+  --muted-foreground: #8a9ab0;
+  --accent: #1e2e3e;
+  --accent-foreground: #e8edf2;
+  --destructive: #e04050;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #2b8fa3;
+
+  --navbar-bg: #0d1b2a;
+  --sidebar-bg: #152232;
+  --sidebar-active: #2b8fa3;
+  --sidebar-active-fg: #ffffff;
+  --sidebar-hover: #1e2e3e;
+  --sidebar-text: #8a9ab0;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* ===== EchoClass Custom Styles ===== */
+
+/* Classroom banner color palette */
+:root {
+  --gc-blue: #155a75;
+  --gc-green: #0D7377;
+  --gc-purple: #2c3e7a;
+  --gc-brown: #5a6f7e;
+  --gc-teal: #15717d;
+  --gc-indigo: #1a3c5e;
+  --gc-red: #8e3a4a;
+  --gc-orange: #c0652a;
+}
+
+/* Dialog overlay */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.dialog-content {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 51;
+  transform: translate(-50%, -50%);
+  width: min(480px, calc(100vw - 2rem));
+  background: var(--card);
+  border-radius: 1rem;
+  box-shadow:
+    0 24px 48px -12px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  animation: dialogIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dialogIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+
+/* Push main content when sidebar is visible */
+main {
+  transition: margin-left 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (min-width: 641px) {
+  .sidebar-overlay {
+    display: none;
+  }
+
+  main {
+    margin-left: 0;
+  }
+
+  html[data-sidebar-expanded="true"] main {
+    margin-left: 250px;
+  }
+}
+
+@media (max-width: 640px) {
+  main {
+    margin-left: 0 !important;
+  }
+}
